@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "init-data": "tsx src/scripts/initializeData.ts"
+    "init-data": "tsx src/scripts/initializeData.ts",
+    "add-mystery": "tsx src/scripts/addMysteryCLI.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.7",

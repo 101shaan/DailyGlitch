@@ -7,18 +7,22 @@ export const mysteries = mockMysteries;
 
 export const getLatestMystery = async (): Promise<Mystery | null> => {
   try {
-    // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
     
-    // Find mysteries that are scheduled for today or earlier
-    const availableMysteries = mockMysteries.filter(m => m.date <= today);
+    const { data, error } = await supabase
+      .from('mysteries')
+      .select('*')
+      .lte('date', today)
+      .order('date', { ascending: false })
+      .limit(1)
+      .single();
+      
+    if (error) {
+      console.error('Error fetching latest mystery:', error);
+      return null;
+    }
     
-    // Get the most recent one
-    const latestMystery = availableMysteries.sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    )[0] || null;
-    
-    return latestMystery;
+    return data;
   } catch (error) {
     console.error('Error fetching latest mystery:', error);
     return null;
@@ -27,8 +31,18 @@ export const getLatestMystery = async (): Promise<Mystery | null> => {
 
 export const getMysteryById = async (id: string): Promise<Mystery | null> => {
   try {
-    const mystery = mockMysteries.find(m => m.id === id) || null;
-    return mystery;
+    const { data, error } = await supabase
+      .from('mysteries')
+      .select('*')
+      .eq('id', id)
+      .single();
+      
+    if (error) {
+      console.error('Error fetching mystery by id:', error);
+      return null;
+    }
+    
+    return data;
   } catch (error) {
     console.error('Error fetching mystery by id:', error);
     return null;
@@ -37,12 +51,18 @@ export const getMysteryById = async (id: string): Promise<Mystery | null> => {
 
 export const searchMysteries = async (query: string): Promise<Mystery[]> => {
   try {
-    const lowerQuery = query.toLowerCase();
-    return mockMysteries.filter(mystery => 
-      mystery.title.toLowerCase().includes(lowerQuery) || 
-      mystery.content.toLowerCase().includes(lowerQuery) ||
-      mystery.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
-    );
+    const { data, error } = await supabase
+      .from('mysteries')
+      .select('*')
+      .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+      .order('date', { ascending: false });
+      
+    if (error) {
+      console.error('Error searching mysteries:', error);
+      return [];
+    }
+    
+    return data || [];
   } catch (error) {
     console.error('Error searching mysteries:', error);
     return [];
@@ -51,9 +71,42 @@ export const searchMysteries = async (query: string): Promise<Mystery[]> => {
 
 export const getAllMysteries = async (): Promise<Mystery[]> => {
   try {
-    return [...mockMysteries];
+    const { data, error } = await supabase
+      .from('mysteries')
+      .select('*')
+      .order('date', { ascending: false });
+      
+    if (error) {
+      console.error('Error fetching all mysteries:', error);
+      return [];
+    }
+    
+    return data || [];
   } catch (error) {
     console.error('Error fetching all mysteries:', error);
+    return [];
+  }
+};
+
+// Get mysteries for the archive (all past mysteries)
+export const getArchiveMysteries = async (): Promise<Mystery[]> => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    
+    const { data, error } = await supabase
+      .from('mysteries')
+      .select('*')
+      .lt('date', today)
+      .order('date', { ascending: false });
+      
+    if (error) {
+      console.error('Error fetching archive mysteries:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching archive mysteries:', error);
     return [];
   }
 };
