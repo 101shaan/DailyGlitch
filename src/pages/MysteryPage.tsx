@@ -9,30 +9,48 @@ import { getMysteryById } from '../data/mysteries';
 
 const MysteryPage: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [mystery, setMystery] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
-  const mystery = id ? getMysteryById(id) : undefined;
-  
+
   useEffect(() => {
-    if (!mystery) {
-      navigate('/not-found', { replace: true });
-    }
-    
-    // Update document title
-    if (mystery) {
-      document.title = `${mystery.title} | Daily Glitch`;
-    }
-    
-    return () => {
-      // Reset title when unmounting
-      const defaultTitle = document.querySelector('[data-default]');
-      if (defaultTitle) {
-        document.title = defaultTitle.getAttribute('title') || '';
+    const fetchMystery = async () => {
+      if (!id) {
+        navigate('/not-found', { replace: true });
+        return;
       }
+      setLoading(true);
+      const data = await getMysteryById(id);
+      if (!data) {
+        navigate('/not-found', { replace: true });
+        return;
+      }
+      setMystery(data);
+      setLoading(false);
+      // Update document title
+      document.title = `${data.title} | Daily Glitch`;
     };
-  }, [mystery, navigate]);
-  
+    fetchMystery();
+    // Cleanup: reset title on unmount
+    return () => {
+      document.title = 'Daily Glitch';
+    };
+  }, [id, navigate]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen bg-black text-white">
+        <Header onSearchOpen={() => setIsSearchOpen(true)} />
+        <main className="flex-grow flex items-center justify-center">
+          <div className="text-center py-20">Loading mystery...</div>
+        </main>
+        <Footer />
+        <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      </div>
+    );
+  }
+
   if (!mystery) {
     return null; // Will redirect in useEffect
   }
