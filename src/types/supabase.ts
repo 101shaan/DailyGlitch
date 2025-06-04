@@ -36,6 +36,17 @@ export interface Database {
           created_at?: string;
         };
       };
+      subscribers: {
+        Row: {
+          email: string;
+        };
+        Insert: {
+          email: string;
+        };
+        Update: {
+          email?: string;
+        };
+      };
     };
   };
 }
