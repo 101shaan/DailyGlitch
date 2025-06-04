@@ -72,7 +72,7 @@ const ArchivePage: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full md:w-96 px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:border-red-500"
-                />
+                /> 
               </div>
 
               {/* Filters */}

@@ -107,7 +107,7 @@ const AboutPage: React.FC = () => {
                   <h3 className="font-mono text-lg font-bold text-white mb-2">Can I submit a mystery?</h3>
                   <p className="text-gray-400">
                     Absolutely. Use our submission form on the Contact page. Please include as much documentation 
-                    as possible, including dates, locations, witnesses, and any available evidence.
+                    as possible, including dates, locations, witnesses, and any available evidence. We will review and respond to as many submissions as we can.
                   </p>
                 </div>
                 

@@ -1,26 +1,30 @@
 import React, { useState } from 'react';
 import { Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const Newsletter: React.FC = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     // Simple validation
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setStatus('error');
       setMessage('Please enter a valid email address.');
       return;
     }
-    
-    // Simulate subscription
+    // Insert into Supabase
+    const { error } = await supabase.from('subscribers').insert([{ email }]);
+    if (error) {
+      setStatus('error');
+      setMessage('There was an error subscribing. Please try again.');
+      return;
+    }
     setStatus('success');
     setMessage('Thank you for subscribing to Daily Glitch!');
     setEmail('');
-    
     // Reset after 5 seconds
     setTimeout(() => {
       setStatus('idle');
@@ -39,7 +43,6 @@ const Newsletter: React.FC = () => {
             Receive unexplained mysteries directly to your inbox. One mind-bending 
             case file per day, no spam, unsubscribe anytime.
           </p>
-          
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row mx-auto max-w-md gap-3">
             <div className="flex-grow relative">
               <input
@@ -59,21 +62,18 @@ const Newsletter: React.FC = () => {
               <span className="font-mono font-semibold">SUBSCRIBE</span>
             </button>
           </form>
-          
           {status === 'error' && (
             <div className="mt-4 flex items-center justify-center text-red-500">
               <AlertCircle size={16} className="mr-2" />
               <span className="text-sm">{message}</span>
             </div>
           )}
-          
           {status === 'success' && (
             <div className="mt-4 flex items-center justify-center text-green-500">
               <CheckCircle size={16} className="mr-2" />
               <span className="text-sm">{message}</span>
             </div>
           )}
-          
           <p className="text-gray-500 text-xs mt-4">
             By subscribing, you agree to our privacy policy and terms of service.
           </p>
