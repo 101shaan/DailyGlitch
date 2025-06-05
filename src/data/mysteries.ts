@@ -110,3 +110,19 @@ export const getArchiveMysteries = async (): Promise<Mystery[]> => {
     return [];
   }
 };
+
+export const getAllSubscribers = async (): Promise<string[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('subscribers')
+      .select('email');
+    if (error) {
+      console.error('Error fetching subscribers:', error);
+      return [];
+    }
+    return (data || []).map((row: { email: string }) => row.email);
+  } catch (error) {
+    console.error('Error fetching subscribers:', error);
+    return [];
+  }
+};

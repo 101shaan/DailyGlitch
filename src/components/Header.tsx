@@ -60,24 +60,10 @@ const Header: React.FC<HeaderProps> = ({ onSearchOpen }) => {
           >
             ABOUT
           </Link>
-          <button 
-            onClick={onSearchOpen}
-            className="text-gray-300 hover:text-white transition-colors"
-            aria-label="Search"
-          >
-            <Search size={18} />
-          </button>
         </nav>
 
         {/* Mobile Menu Button */}
         <div className="flex md:hidden items-center space-x-4">
-          <button 
-            onClick={onSearchOpen}
-            className="text-gray-300 hover:text-white transition-colors p-2"
-            aria-label="Search"
-          >
-            <Search size={18} />
-          </button>
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="text-gray-300 hover:text-white transition-colors"
